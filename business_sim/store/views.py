@@ -5,7 +5,7 @@ from .models import Order
 
 
 def index(request):
-    latest_order_list = Order.objects.order_by('-customer__time_in')[:5]
+    latest_order_list = Order.objects.order_by('customer__time_in')
     context = {'latest_order_list': latest_order_list}
     return render(request, 'store/index.html', context)
 
