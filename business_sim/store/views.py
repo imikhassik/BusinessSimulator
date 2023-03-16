@@ -1,8 +1,13 @@
 from django.http import HttpResponse
+from django.shortcuts import render
+
+from .models import Order
 
 
 def index(request):
-    return HttpResponse("You're at store's index page.")
+    latest_order_list = Order.objects.order_by('-customer__time_in')[:5]
+    context = {'latest_order_list': latest_order_list}
+    return render(request, 'store/index.html', context)
 
 
 def order_detail(request, order_id):

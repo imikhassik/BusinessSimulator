@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Index</title>
+</head>
+<body>
+{% if latest_order_list %}
+    <ol>
+        {% for order in latest_order_list %}
+        <li>Order from <a href="/store/customer/{{ order.customer.id }}">{{order.customer.name}}</a>:
+            <a href="/store/{{ order.id }}/">{{ order.amount }} lbs of {{ order.product.lower }}.
+            Total: ${{ order.get_total_cost }}.</a> Wait time: {{ order.customer.wait_time }} minutes.</li>
+        {% endfor %}
+    </ol>
+{% else %}
+    <p>No order to display</p>
+{% endif %}
+</body>
+</html>

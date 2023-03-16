@@ -10,7 +10,7 @@ class Customer(models.Model):
         return f'{self.name}'
 
     def wait_time(self):
-        return timezone.now() - self.time_in
+        return (timezone.now() - self.time_in).seconds // 60
 
 
 class Order(models.Model):
@@ -20,7 +20,7 @@ class Order(models.Model):
     price = models.FloatField(default=0.0)
 
     def __str__(self):
-        return f'#{self.id} for {self.amount} lbs of {self.product}'
+        return f'#{self.id} for {self.amount} lbs of {self.product.lower()}'
 
     def get_total_cost(self):
-        return f'${self.price * self.amount}'
+        return self.price * self.amount
