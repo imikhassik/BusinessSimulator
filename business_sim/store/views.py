@@ -1,7 +1,7 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
-from .models import Order
+from .models import Order, Customer
 
 
 def index(request):
@@ -11,7 +11,8 @@ def index(request):
 
 
 def order_detail(request, order_id):
-    return HttpResponse("You're viewing order %s detail" % order_id)
+    order = get_object_or_404(Order, pk=order_id)
+    return render(request, 'store/order_detail.html', {'order': order})
 
 
 def fulfill(request, order_id):
@@ -20,4 +21,5 @@ def fulfill(request, order_id):
 
 
 def customer(request, customer_id):
-    return HttpResponse("You're viewing customer %s detail" % customer_id)
+    customer = get_object_or_404(Customer, pk=customer_id)
+    return render(request, 'store/customer.html', {'customer': customer})
