@@ -10,7 +10,7 @@ class Customer(models.Model):
         return f'{self.name}'
 
     def wait_time(self):
-        return (timezone.localtime() - self.time_in).seconds // 60
+        return timezone.localtime() - self.time_in
 
 
 class Order(models.Model):

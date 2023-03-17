@@ -8,7 +8,7 @@
 {% if customer_list %}
     <ol>
         {% for customer in customer_list %}
-        <li><h2>Order from <a href="{% url 'store:customer' customer.id %}">{{ customer.name }}</a> waiting {{ customer.wait_time }} minutes</h2></li>
+        <li><h2>Order from <a href="{% url 'store:customer' customer.id %}">{{ customer.name }}</a> waiting {{ customer.time_in|timesince }} </h2></li>
         <ul>
             {% for order in customer.order_set.all %}
             <li><a href="{% url 'store:order_detail' order.id %}">{{ order.amount }} lbs of {{ order.product }}</a>.
