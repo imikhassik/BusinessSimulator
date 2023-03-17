@@ -5,16 +5,19 @@
     <title>Order Index</title>
 </head>
 <body>
-{% if latest_order_list %}
+{% if customer_list %}
     <ol>
-        {% for order in latest_order_list %}
-        <li>Order from <a href="/store/customer/{{ order.customer.id }}">{{order.customer.name}}</a>:
-            <a href="/store/{{ order.id }}/">{{ order.amount }} lbs of {{ order.product.lower }}.
-            Total: ${{ order.get_total_cost }}.</a> Wait time: {{ order.customer.wait_time }} minutes.</li>
+        {% for customer in customer_list %}
+        <li><h2>Order from <a href="/store/customer/{{ customer.pk }}">{{ customer.name }}</a> waiting {{ customer.wait_time }} minutes</h2></li>
+        <ul>
+            {% for order in customer.order_set.all %}
+            <li><a href="/store/{{ order.pk }}">{{ order.amount }} lbs of {{ order.product }}</a>. Total cost: ${{ order.get_total_cost }}</li>
+            {% endfor %}
+        </ul>
         {% endfor %}
     </ol>
 {% else %}
-    <p>No order to display</p>
+    <p>No orders to display</p>
 {% endif %}
 </body>
 </html>

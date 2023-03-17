@@ -5,9 +5,8 @@ from .models import Order, Customer
 
 
 def index(request):
-    latest_order_list = Order.objects.order_by('customer__time_in')
-    context = {'latest_order_list': latest_order_list}
-    return render(request, 'store/index.html', context)
+    customer_list = Customer.objects.all()
+    return render(request, 'store/index.html', {'customer_list': customer_list})
 
 
 def order_detail(request, order_id):

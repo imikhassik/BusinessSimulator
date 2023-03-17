@@ -5,6 +5,11 @@
     <title>Customer</title>
 </head>
 <body>
-{{ customer }}
+<h1>{{ customer.name }}</h1>
+<ul>
+    {% for order in customer.order_set.all %}
+    <li>{{ order.amount }} lbs of {{ order.product.lower }}. Total cost: ${{ order.get_total_cost }}</li>
+    {% endfor %}
+</ul>
 </body>
 </html>
