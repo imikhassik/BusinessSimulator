@@ -1,5 +1,6 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 
 from .models import Order, Customer
 
@@ -15,8 +16,18 @@ def order_detail(request, order_id):
 
 
 def fulfill(request, order_id):
-    response = "This is order %s fulfillment page"
-    return HttpResponse(response % order_id)
+    order = get_object_or_404(Order, pk=order_id)
+    try:
+        order_status = request.POST['fulfillment']
+    except KeyError:
+        return render(request, 'store/order_detail.html', {
+            'order': order,
+            'error_message': "You didn't select an action."
+        })
+    else:
+        order.status = order_status
+        order.save()
+    return HttpResponseRedirect(reverse('store:index'))
 
 
 def customer(request, customer_id):

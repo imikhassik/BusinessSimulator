@@ -5,6 +5,17 @@
     <title>Order Detail</title>
 </head>
 <body>
-{{ order }}
+<form action="{% url 'store:fulfill' order.id %}" method="post">
+    {% csrf_token %}
+    <fieldset>
+        {% if error_message %} <p><strong>{{ error_message }}</strong></p> {% endif %}
+        <legend><h1>{{ order.amount }} lb{{ order.amount|pluralize }} of {{ order.product.lower }}</h1></legend>
+        <input type="radio" name="fulfillment" id="fulfill" value="FU">
+        <label for="fulfill">Fulfill</label>
+        <input type="radio" name="fulfillment" id="reject" value="RE">
+        <label for="reject">Reject</label>
+    </fieldset>
+    <input type="submit" value="Submit">
+</form>
 </body>
 </html>

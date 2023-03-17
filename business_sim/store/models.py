@@ -19,6 +19,19 @@ class Order(models.Model):
     amount = models.FloatField(default=0.0)
     price = models.FloatField(default=0.0)
 
+    PROGRESS = 'PR'
+    FULFILLED = 'FU'
+    REJECTED = 'RE'
+    STATUS_CHOICES = [
+        (PROGRESS, 'In progress'),
+        (FULFILLED, 'Fulfilled'),
+        (REJECTED, 'Rejected'),
+    ]
+    status = models.CharField(max_length=2,
+                              choices=STATUS_CHOICES,
+                              default=PROGRESS,
+                              )
+
     def __str__(self):
         return f'#{self.id} for {self.amount} lbs of {self.product.lower()}'
 
