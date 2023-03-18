@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils import timezone
 
@@ -12,6 +14,10 @@ class Customer(models.Model):
 
     def wait_time_over(self):
         self.time_out = timezone.localtime()
+
+    def waiting_too_long(self):
+        if not self.time_out:
+            return timezone.localtime() - self.time_in > datetime.timedelta(minutes=1)
 
 
 class Order(models.Model):
