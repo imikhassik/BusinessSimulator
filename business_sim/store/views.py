@@ -1,19 +1,23 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
-from django.utils import timezone
+from django.views import generic
 
 from .models import Order, Customer
 
 
-def index(request):
-    customer_list = Customer.objects.all()
-    return render(request, 'store/index.html', {'customer_list': customer_list})
+class IndexView(generic.ListView):
+    model = Customer
+    template_name = 'store/index.html'
 
 
-def order_detail(request, order_id):
-    order = get_object_or_404(Order, pk=order_id)
-    return render(request, 'store/order_detail.html', {'order': order})
+class OrderDetailView(generic.DetailView):
+    model = Order
+
+
+class CustomerDetailView(generic.DetailView):
+    model = Customer
+    template_name = 'store/customer.html'
 
 
 def fulfill(request, order_id):
@@ -39,8 +43,3 @@ def fulfill(request, order_id):
             order.customer.wait_time_over()
             order.customer.save()
     return HttpResponseRedirect(reverse('store:index'))
-
-
-def customer(request, customer_id):
-    customer = get_object_or_404(Customer, pk=customer_id)
-    return render(request, 'store/customer.html', {'customer': customer})
