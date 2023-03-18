@@ -6,7 +6,7 @@ from django.utils import timezone
 
 class Customer(models.Model):
     name = models.CharField(max_length=50)
-    time_in = models.DateTimeField()
+    time_in = models.DateTimeField(default=timezone.localtime())
     time_out = models.DateTimeField(null=True)
 
     def __str__(self):
