@@ -5,12 +5,13 @@ from django.utils import timezone
 class Customer(models.Model):
     name = models.CharField(max_length=50)
     time_in = models.DateTimeField()
+    time_out = models.DateTimeField(null=True)
 
     def __str__(self):
         return f'{self.name}'
 
-    def wait_time(self):
-        return timezone.localtime() - self.time_in
+    def wait_time_over(self):
+        self.time_out = timezone.localtime()
 
 
 class Order(models.Model):

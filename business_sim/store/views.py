@@ -28,6 +28,16 @@ def fulfill(request, order_id):
     else:
         order.status = order_status
         order.save()
+        all_orders_fulfilled = 0
+        for order in order.customer.order_set.all():
+            if order.status == 'PR':
+                all_orders_fulfilled = 0
+                break
+            else:
+                all_orders_fulfilled = 1
+        if all_orders_fulfilled:
+            order.customer.wait_time_over()
+            order.customer.save()
     return HttpResponseRedirect(reverse('store:index'))
 
 

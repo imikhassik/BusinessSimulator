@@ -8,11 +8,13 @@
 {% if customer_list %}
     <ol>
         {% for customer in customer_list %}
-        <li><h2>Order from <a href="{% url 'store:customer' customer.id %}">{{ customer.name }}</a> waiting {{ customer.time_in|timesince }} </h2></li>
+        <li><h2>Order from <a href="{% url 'store:customer' customer.id %}">{{ customer.name }}</a>
+            {% if not customer.time_out %} waiting {{ customer.time_in|timesince }} {% endif %}</h2></li>
         <ul>
             {% for order in customer.order_set.all %}
-            <li><a href="{% url 'store:order_detail' order.id %}">{{ order.amount }} lbs of {{ order.product }}</a>.
-                Total cost: ${{ order.get_total_cost }}. Order status: {{ order.get_status_display }}</li>
+            <li><a href="{% url 'store:order_detail' order.id %}">{{ order.amount }} lb{{ order.amount|pluralize }}
+                of {{ order.product.lower }}</a>. Total cost: ${{ order.get_total_cost }}.
+                Order status: {{ order.get_status_display }}</li>
             {% endfor %}
         </ul>
         {% endfor %}
