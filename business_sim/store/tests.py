@@ -25,20 +25,22 @@ class CustomerModelTests(TestCase):
         self.assertIs(customer.waiting_too_long(), False)
 
 
-def create_customer(name: str, time_in=timezone.localtime(), time_out: datetime.datetime = None) -> object:
+def create_customer(name: str, time_out: datetime.datetime = None, time_in_offset: int = 0) -> object:
     """
-    Create customer. Provide 'name' only to simulate customer with active
-    orders. Provide 'time_out' to simulate customer with inactive orders.
-    :param name: string
-    :param time_in: defaults to timezone.localtime()
-    :param time_out: defaults to None
-    :return: Customer object
+    Create customer. Provide 'name' only to simulate customer with
+    active orders.
+    Provide 'time_out' to simulate customer with
+    inactive orders.
+    Set 'time_in_offset' to positive int to offset customer time_in by
+    number of minutes into the future, and to negative int to offset
+    customer time_in by number of minutes into the past.
     """
+    time_in = timezone.localtime() + datetime.timedelta(minutes=time_in_offset)
     customer = Customer.objects.create(name=name, time_in=time_in, time_out=time_out)
     return customer
 
 
-class IndexViewTests(TestCase):
+class CustomerIndexViewTests(TestCase):
     def test_customer_with_active_orders(self):
         """
         Customer with active orders is displayed on index page.
@@ -73,7 +75,39 @@ class IndexViewTests(TestCase):
         """
         Index page displays all customers with active orders.
         """
-        customer1 = create_customer("Customer1")
-        customer2 = create_customer("Customer2", time_in=timezone.localtime()+datetime.timedelta(seconds=1))
+        customer1 = create_customer("Customer1", time_in_offset=-1)
+        customer2 = create_customer("Customer2")
         response = self.client.get(reverse('store:index'))
         self.assertQuerysetEqual(response.context['customer_list'], [customer2, customer1])
+
+    def test_future_customer(self):
+        """
+        Index page does not display customers with future time_in.
+        """
+        create_customer("Future customer", time_in_offset=1)
+        url = reverse('store:index')
+        response = self.client.get(url)
+        self.assertQuerysetEqual(response.context['customer_list'], [])
+        self.assertContains(response, "No orders to display")
+
+
+class CustomerDetailViewTests(TestCase):
+    def test_future_customer(self):
+        """
+        The detail view of a customer with a time_in in the future
+        returns a 404 not found.
+        """
+        future_customer = create_customer("Future customer", time_in_offset=1)
+        url = reverse('store:customer', args=(future_customer.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_customer_with_active_orders(self):
+        """
+        The detail view of a customer with a time_in in the past
+        and active orders displays customer name.
+        """
+        active_customer = create_customer("Active customer")
+        url = reverse('store:customer', args=(active_customer.id,))
+        response = self.client.get(url)
+        self.assertContains(response, active_customer.name)

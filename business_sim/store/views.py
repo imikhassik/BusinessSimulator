@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views import generic
+from django.utils import timezone
 
 from .models import Order, Customer
 
@@ -11,7 +12,10 @@ class IndexView(generic.ListView):
     template_name = 'store/index.html'
 
     def get_queryset(self):
-        result = Customer.objects.filter(time_out=None).order_by('-time_in')
+        result = Customer.objects.filter(
+            time_in__lte=timezone.localtime(),
+            time_out=None
+        ).order_by('-time_in')
         return result
 
 
@@ -22,6 +26,9 @@ class OrderDetailView(generic.DetailView):
 class CustomerDetailView(generic.DetailView):
     model = Customer
     template_name = 'store/customer.html'
+
+    def get_queryset(self):
+        return Customer.objects.filter(time_in__lte=timezone.localtime())
 
 
 def fulfill(request, order_id):
