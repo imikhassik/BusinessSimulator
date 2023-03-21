@@ -10,6 +10,10 @@ class IndexView(generic.ListView):
     model = Customer
     template_name = 'store/index.html'
 
+    def get_queryset(self):
+        result = Customer.objects.filter(time_out=None).order_by('-time_in')
+        return result
+
 
 class OrderDetailView(generic.DetailView):
     model = Order
